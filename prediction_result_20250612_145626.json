@@ -1,0 +1,48 @@
+{
+  "input_data": {
+    "age": 30,
+    "gender": 1,
+    "temperature": 38.2,
+    "fever": 1,
+    "cough": 1,
+    "headache": 0,
+    "sore_throat": 1,
+    "runny_nose": 0,
+    "fatigue": 1,
+    "body_aches": 1,
+    "weather_temp": 22,
+    "humidity": 70,
+    "air_quality": 3,
+    "season": 1,
+    "month": 4,
+    "recent_travel": 0,
+    "contact_sick": 1
+  },
+  "prediction_result": {
+    "predicted_disease": "Seasonal Flu",
+    "confidence": 0.7451612441531559,
+    "all_probabilities": {
+      "Allergic Rhinitis": 0.06550054243490182,
+      "Common Cold": 0.0,
+      "Gastroenteritis": 0.06750995106216537,
+      "Healthy": 0.12182826234977691,
+      "Heat Exhaustion": 0.0,
+      "Seasonal Flu": 0.7451612441531559
+    },
+    "top_3_predictions": [
+      [
+        "Seasonal Flu",
+        0.7451612441531559
+      ],
+      [
+        "Healthy",
+        0.12182826234977691
+      ],
+      [
+        "Gastroenteritis",
+        0.06750995106216537
+      ]
+    ],
+    "prediction_time": "2025-06-12T14:56:26.230451"
+  }
+}

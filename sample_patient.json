@@ -1,0 +1,19 @@
+{
+  "age": 35,
+  "gender": 0,
+  "temperature": 39.1,
+  "fever": 1,
+  "cough": 1,
+  "headache": 1,
+  "sore_throat": 1,
+  "runny_nose": 0,
+  "fatigue": 1,
+  "body_aches": 1,
+  "weather_temp": 18,
+  "humidity": 85,
+  "air_quality": 2,
+  "season": 0,
+  "month": 12,
+  "recent_travel": 0,
+  "contact_sick": 1
+} 
