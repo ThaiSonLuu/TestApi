@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: health_predictor_db
+    restart: no
+    environment:
+      POSTGRES_DB: health_predictor
+      POSTGRES_USER: health_predictor_user
+      POSTGRES_PASSWORD: health_predictor_password
+    ports:
+      - '2510:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql_health_predictor/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - health_predictor_network
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  health_predictor_network:
+    driver: bridge

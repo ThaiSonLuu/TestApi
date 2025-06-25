@@ -11,10 +11,10 @@ import joblib
 import json
 import argparse
 from datetime import datetime
-from train_model import HealthPredictionTrainer
+from .train_model import HealthPredictionTrainer
 
 class HealthPredictor:
-    def __init__(self, model_file='health_prediction_model.pkl'):
+    def __init__(self, model_file='data/health_prediction_model.pkl'):
         self.trainer = HealthPredictionTrainer()
         self.model_file = model_file
         self.load_model()
@@ -62,13 +62,15 @@ class HealthPredictor:
         sorted_probabilities = sorted(all_probabilities.items(), 
                                     key=lambda x: x[1], reverse=True)
         
-        return {
+        result = {
             'predicted_disease': predicted_disease,
             'confidence': float(max_probability),
             'all_probabilities': all_probabilities,
             'top_3_predictions': sorted_probabilities[:3],
             'prediction_time': datetime.now().isoformat()
         }
+        
+        return result
     
     def predict_batch(self, patients_data):
         """Dự đoán cho nhiều bệnh nhân"""
@@ -167,7 +169,7 @@ def interactive_input():
 def main():
     """Main prediction function"""
     parser = argparse.ArgumentParser(description='Health Prediction Service')
-    parser.add_argument('--model', default='health_prediction_model.pkl', 
+    parser.add_argument('--model', default='data/health_prediction_model.pkl', 
                        help='Path to trained model file')
     parser.add_argument('--interactive', '-i', action='store_true',
                        help='Interactive input mode')
@@ -214,7 +216,7 @@ def main():
     print(f"\n⏰ Prediction Time: {result['prediction_time']}")
     
     # Save result
-    result_file = f"prediction_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    result_file = f"data/prediction_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(result_file, 'w') as f:
         json.dump({
             'input_data': patient_data,

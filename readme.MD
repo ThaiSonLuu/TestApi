@@ -5,6 +5,7 @@ Mô hình Machine Learning dự báo tình trạng sức khỏe theo mùa dựa 
 ## 📋 Tổng quan
 
 Hệ thống bao gồm:
+
 - **train_model.py**: Train mô hình ML từ dữ liệu
 - **predict.py**: Sử dụng mô hình để dự đoán bệnh
 - **sample_patient.json**: Dữ liệu bệnh nhân mẫu
@@ -12,54 +13,45 @@ Hệ thống bao gồm:
 ## 🚀 Cài đặt
 
 ### 1. Tạo môi trường ảo
+
 ```bash
-python -m venv health_ml_env
-source health_ml_env/bin/activate  # Linux/Mac
-# hoặc
-health_ml_env\Scripts\activate     # Windows
+python -m venv venv
+source venv/bin/activate
 ```
 
 ### 2. Cài đặt dependencies
 
-#### Cách 1: Sử dụng pip (có thể gặp lỗi scikit-learn trên macOS)
+#### Sử dụng pip
+
 ```bash
 pip install -r requirements.txt
-```
-
-#### Cách 2: Sử dụng conda (khuyến nghị cho macOS)
-```bash
-# Cài đặt miniconda nếu chưa có
-conda create -n health_ml python=3.9
-conda activate health_ml
-conda install pandas numpy scikit-learn joblib
-```
-
-### 3. Kiểm tra cài đặt
-```bash
-python -c "import pandas, numpy, sklearn, joblib; print('✅ All packages installed successfully!')"
 ```
 
 ## 🤖 Train Mô hình
 
 ### Train với dữ liệu mẫu (tự động tạo)
+
 ```bash
 python train_model.py
 ```
 
 Kết quả train sẽ hiển thị:
+
 - Accuracy score
-- Cross-validation score  
+- Cross-validation score
 - Feature importance
 - Classification report
 - Model được lưu vào `health_prediction_model.pkl`
 
 ### Train với dữ liệu custom
+
 ```bash
 # Tạo file CSV với format như health_data_sample.csv
 python train_model.py --data your_data.csv
 ```
 
 ### Kết quả mong đợi
+
 ```
 🏥 Health Prediction Model Training
 ==================================================
@@ -94,16 +86,19 @@ CV Score: 0.8875 (+/- 0.0234)
 ## 🔮 Dự đoán
 
 ### 1. Dự đoán với dữ liệu mẫu
+
 ```bash
 python predict.py --sample
 ```
 
 ### 2. Dự đoán tương tác (nhập liệu từ bàn phím)
+
 ```bash
 python predict.py --interactive
 ```
 
 Ví dụ nhập liệu:
+
 ```
 🩺 Nhập thông tin bệnh nhân:
 ------------------------------
@@ -132,11 +127,13 @@ Tháng hiện tại (1-12): 4
 ```
 
 ### 3. Dự đoán từ file JSON
+
 ```bash
 python predict.py --json sample_patient.json
 ```
 
 ### 4. Dự đoán với model custom
+
 ```bash
 python predict.py --model your_model.pkl --sample
 ```
@@ -168,29 +165,31 @@ Confidence: 0.8750 (87.5%)
 ## 📝 Định dạng dữ liệu
 
 ### Input Features (17 features)
+
 ```json
 {
-  "age": 30,                    // Tuổi (5-80)
-  "gender": 1,                  // Giới tính (0=nữ, 1=nam)
-  "temperature": 38.2,          // Nhiệt độ cơ thể (°C)
-  "fever": 1,                   // Sốt (0=không, 1=có)
-  "cough": 1,                   // Ho
-  "headache": 0,                // Đau đầu
-  "sore_throat": 1,             // Đau họng
-  "runny_nose": 0,              // Sổ mũi
-  "fatigue": 1,                 // Mệt mỏi
-  "body_aches": 1,              // Đau nhức cơ thể
-  "weather_temp": 22,           // Nhiệt độ thời tiết (°C)
-  "humidity": 70,               // Độ ẩm (%)
-  "air_quality": 3,             // Chất lượng không khí (1-5)
-  "season": 1,                  // Mùa (0=đông, 1=xuân, 2=hè, 3=thu)
-  "month": 4,                   // Tháng (1-12)
-  "recent_travel": 0,           // Du lịch gần đây (0=không, 1=có)
-  "contact_sick": 1             // Tiếp xúc người bệnh (0=không, 1=có)
+  "age": 30, // Tuổi (5-80)
+  "gender": 1, // Giới tính (0=nữ, 1=nam)
+  "temperature": 38.2, // Nhiệt độ cơ thể (°C)
+  "fever": 1, // Sốt (0=không, 1=có)
+  "cough": 1, // Ho
+  "headache": 0, // Đau đầu
+  "sore_throat": 1, // Đau họng
+  "runny_nose": 0, // Sổ mũi
+  "fatigue": 1, // Mệt mỏi
+  "body_aches": 1, // Đau nhức cơ thể
+  "weather_temp": 22, // Nhiệt độ thời tiết (°C)
+  "humidity": 70, // Độ ẩm (%)
+  "air_quality": 3, // Chất lượng không khí (1-5)
+  "season": 1, // Mùa (0=đông, 1=xuân, 2=hè, 3=thu)
+  "month": 4, // Tháng (1-12)
+  "recent_travel": 0, // Du lịch gần đây (0=không, 1=có)
+  "contact_sick": 1 // Tiếp xúc người bệnh (0=không, 1=có)
 }
 ```
 
 ### Output Diseases (6 loại bệnh)
+
 - **Healthy**: Khỏe mạnh
 - **Common Cold**: Cảm lạnh thông thường
 - **Seasonal Flu**: Cúm mùa
@@ -201,7 +200,9 @@ Confidence: 0.8750 (87.5%)
 ## 🔧 Tùy chỉnh Model
 
 ### Thay đổi thuật toán
+
 Sửa trong `train_model.py`:
+
 ```python
 # Thay RandomForestClassifier bằng thuật toán khác
 from sklearn.svm import SVC
@@ -213,13 +214,17 @@ self.model = MLPClassifier(hidden_layer_sizes=(100, 50), random_state=42)
 ```
 
 ### Thêm features mới
+
 Thêm vào `create_sample_data()`:
+
 ```python
 data['new_feature'] = np.random.choice([0, 1], n_samples)
 ```
 
 ### Thêm bệnh mới
+
 Sửa logic trong `create_sample_data()`:
+
 ```python
 elif (your_conditions):
     diseases.append('New Disease')
@@ -228,6 +233,7 @@ elif (your_conditions):
 ## 📈 Đánh giá Model
 
 ### Xem chi tiết performance
+
 ```bash
 python -c "
 from train_model import HealthPredictionTrainer
@@ -238,6 +244,7 @@ print('Model info:', trainer.model_data)
 ```
 
 ### Batch prediction nhiều bệnh nhân
+
 ```python
 from predict import HealthPredictor
 
@@ -257,6 +264,7 @@ print(results)
 ## 🐛 Troubleshooting
 
 ### Lỗi scikit-learn trên macOS
+
 ```bash
 # Cài đặt qua conda thay vì pip
 conda install scikit-learn
@@ -268,12 +276,14 @@ pip install scikit-learn
 ```
 
 ### Lỗi "Model not found"
+
 ```bash
 # Train model trước khi predict
 python train_model.py
 ```
 
 ### Lỗi "Missing features"
+
 Đảm bảo input có đủ 17 features theo format sample_patient.json
 
 ## 📞 Hỗ trợ
@@ -283,4 +293,5 @@ python train_model.py
 - Check requirements.txt compatibility
 
 ---
+
 **⚕️ Disclaimer**: Đây là mô hình demo cho mục đích học tập. Không sử dụng để chẩn đoán y tế thực tế.
