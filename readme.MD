@@ -15,7 +15,7 @@ Hệ thống bao gồm:
 ### 1. Tạo môi trường ảo
 
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -47,7 +47,7 @@ Kết quả train sẽ hiển thị:
 
 ```bash
 # Tạo file CSV với format như health_data_sample.csv
-python train_model.py --data your_data.csv
+python3 train_model.py --data your_data.csv
 ```
 
 ### Kết quả mong đợi
@@ -88,13 +88,13 @@ CV Score: 0.8875 (+/- 0.0234)
 ### 1. Dự đoán với dữ liệu mẫu
 
 ```bash
-python predict.py --sample
+python3 predict.py --sample
 ```
 
 ### 2. Dự đoán tương tác (nhập liệu từ bàn phím)
 
 ```bash
-python predict.py --interactive
+python3 predict.py --interactive
 ```
 
 Ví dụ nhập liệu:
@@ -129,13 +129,13 @@ Tháng hiện tại (1-12): 4
 ### 3. Dự đoán từ file JSON
 
 ```bash
-python predict.py --json sample_patient.json
+python3 predict.py --json sample_patient.json
 ```
 
 ### 4. Dự đoán với model custom
 
 ```bash
-python predict.py --model your_model.pkl --sample
+python3 predict.py --model your_model.pkl --sample
 ```
 
 ## 📊 Kết quả Dự đoán
@@ -235,7 +235,7 @@ elif (your_conditions):
 ### Xem chi tiết performance
 
 ```bash
-python -c "
+python3 -c "
 from train_model import HealthPredictionTrainer
 trainer = HealthPredictionTrainer()
 trainer.load_model()
@@ -253,45 +253,3 @@ patients = [patient1_data, patient2_data, patient3_data]
 results = predictor.predict_batch(patients)
 print(results)
 ```
-
-## ⚠️ Lưu ý
-
-1. **Dữ liệu mẫu**: Chỉ để demo, không dùng cho chẩn đoán thực tế
-2. **Model accuracy**: ~87-90% trên dữ liệu mẫu
-3. **Medical disclaimer**: Không thay thế tư vấn y tế chuyên nghiệp
-4. **Input validation**: Luôn kiểm tra dữ liệu đầu vào
-
-## 🐛 Troubleshooting
-
-### Lỗi scikit-learn trên macOS
-
-```bash
-# Cài đặt qua conda thay vì pip
-conda install scikit-learn
-
-# Hoặc fix OpenMP
-brew install libomp
-export LDFLAGS="-L/opt/homebrew/lib -lomp"
-pip install scikit-learn
-```
-
-### Lỗi "Model not found"
-
-```bash
-# Train model trước khi predict
-python train_model.py
-```
-
-### Lỗi "Missing features"
-
-Đảm bảo input có đủ 17 features theo format sample_patient.json
-
-## 📞 Hỗ trợ
-
-- File issues nếu gặp lỗi
-- Xem log chi tiết trong console output
-- Check requirements.txt compatibility
-
----
-
-**⚕️ Disclaimer**: Đây là mô hình demo cho mục đích học tập. Không sử dụng để chẩn đoán y tế thực tế.

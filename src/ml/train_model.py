@@ -5,7 +5,6 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 import joblib
-import json
 from datetime import datetime
 import os
 
@@ -113,7 +112,7 @@ class HealthPredictionTrainer:
 
         return X, y_encoded, y
 
-    def train(self, data_file=None):
+    def _train(self, data_file=None):
         """Train mô hình"""
         print("🤖 Starting model training...")
 
@@ -210,59 +209,52 @@ class HealthPredictionTrainer:
         print(f"Trained at: {model_data.get('trained_at', 'Unknown')}")
         return model_data
 
+    def train_model(self):
+        """Main training function"""
+        print("🏥 Health Prediction Model Training")
+        print("=" * 50)
 
-def main():
-    """Main training function"""
-    print("🏥 Health Prediction Model Training")
-    print("=" * 50)
+        # Train model
+        accuracy, cv_score = self._train()
 
-    trainer = HealthPredictionTrainer()
+        # Save model
+        self.save_model()
 
-    # Train model
-    accuracy, cv_score = trainer.train()
+        print("\n✅ Training completed successfully!")
+        print(f"Final accuracy: {accuracy:.4f}")
+        print(f"Cross-validation score: {cv_score:.4f}")
 
-    # Save model
-    trainer.save_model()
+        # Test prediction với sample data
+        print("\n🧪 Testing prediction with sample data...")
+        sample_input = {
+            "age": 25,
+            "gender": 1,
+            "temperature": 38.5,
+            "fever": 1,
+            "cough": 1,
+            "headache": 0,
+            "sore_throat": 1,
+            "runny_nose": 0,
+            "fatigue": 1,
+            "body_aches": 1,
+            "weather_temp": 20,
+            "humidity": 65,
+            "air_quality": 2,
+            "season": 1,
+            "month": 3,
+            "recent_travel": 0,
+            "contact_sick": 1,
+        }
 
-    print("\n✅ Training completed successfully!")
-    print(f"Final accuracy: {accuracy:.4f}")
-    print(f"Cross-validation score: {cv_score:.4f}")
+        # Create dataframe from sample
+        sample_df = pd.DataFrame([sample_input])
+        sample_scaled = self.scaler.transform(sample_df)
+        prediction = self.model.predict(sample_scaled)
+        probabilities = self.model.predict_proba(sample_scaled)[0]
 
-    # Test prediction với sample data
-    print("\n🧪 Testing prediction with sample data...")
-    sample_input = {
-        "age": 25,
-        "gender": 1,
-        "temperature": 38.5,
-        "fever": 1,
-        "cough": 1,
-        "headache": 0,
-        "sore_throat": 1,
-        "runny_nose": 0,
-        "fatigue": 1,
-        "body_aches": 1,
-        "weather_temp": 20,
-        "humidity": 65,
-        "air_quality": 2,
-        "season": 1,
-        "month": 3,
-        "recent_travel": 0,
-        "contact_sick": 1,
-    }
+        predicted_disease = self.disease_encoder.inverse_transform(prediction)[0]
 
-    # Create dataframe from sample
-    sample_df = pd.DataFrame([sample_input])
-    sample_scaled = trainer.scaler.transform(sample_df)
-    prediction = trainer.model.predict(sample_scaled)
-    probabilities = trainer.model.predict_proba(sample_scaled)[0]
-
-    predicted_disease = trainer.disease_encoder.inverse_transform(prediction)[0]
-
-    print(f"Sample prediction: {predicted_disease}")
-    print("Probabilities for all diseases:")
-    for i, disease in enumerate(trainer.disease_encoder.classes_):
-        print(f"  {disease}: {probabilities[i]:.4f}")
-
-
-if __name__ == "__main__":
-    main()
+        print(f"Sample prediction: {predicted_disease}")
+        print("Probabilities for all diseases:")
+        for i, disease in enumerate(self.disease_encoder.classes_):
+            print(f"  {disease}: {probabilities[i]:.4f}")
