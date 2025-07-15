@@ -80,11 +80,10 @@ CREATE INDEX IF NOT EXISTS idx_medical_records_type ON medical_records(record_ty
 
 -- Tạo bảng triệu chứng trong từng bệnh án (many-to-many)
 CREATE TABLE IF NOT EXISTS record_symptoms (
-    id SERIAL PRIMARY KEY,
     record_id INTEGER NOT NULL REFERENCES medical_records(id) ON DELETE CASCADE,
     symptom_id INTEGER NOT NULL REFERENCES symptoms(id) ON DELETE CASCADE,
     
-    UNIQUE(record_id, symptom_id)
+    PRIMARY KEY (record_id, symptom_id)
 );
 
 -- Tạo index cho bảng record_symptoms
@@ -92,14 +91,13 @@ CREATE INDEX IF NOT EXISTS idx_record_symptoms_symptom ON record_symptoms(sympto
 
 -- Tạo bảng bệnh được chẩn đoán trong từng bệnh án (many-to-many)
 CREATE TABLE IF NOT EXISTS record_diseases (
-    id SERIAL PRIMARY KEY,
     record_id INTEGER NOT NULL REFERENCES medical_records(id) ON DELETE CASCADE,
     disease_id INTEGER NOT NULL REFERENCES diseases(id) ON DELETE CASCADE,
     
     -- Tỉ lệ mắc bệnh
     probability DOUBLE PRECISION, -- Tỉ lệ/xác suất mắc bệnh (0.0000 - 1.0000)
     
-    UNIQUE(record_id, disease_id)
+    PRIMARY KEY (record_id, disease_id)
 );
 
 -- Tạo index cho bảng record_diseases
@@ -188,6 +186,57 @@ INSERT INTO diseases (name, code, description, is_contagious) VALUES
 ('Cao huyết áp', 'HYPERTENSION', 'Huyết áp cao', FALSE),
 ('Tiểu đường type 2', 'DIABETES_T2', 'Rối loạn chuyển hóa glucose', FALSE)
 ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO users (username, email, password, first_name, last_name, date_of_birth, gender, phone, address, current_latitude, current_longitude, role, is_active)
+VALUES
+-- Patients
+('patient01', 'patient01@example.com', 'hashed_pw_1', 'Linh', 'Nguyen', '1990-05-12', 'female', '0901234561', 'Hanoi', 21.0285, 105.8542, 'patient', TRUE),
+('patient02', 'patient02@example.com', 'hashed_pw_2', 'Minh', 'Tran', '1985-09-20', 'male', '0901234562', 'Ho Chi Minh', 10.7626, 106.6602, 'patient', TRUE),
+('patient03', 'patient03@example.com', 'hashed_pw_3', 'Anh', 'Le', '1993-12-03', 'female', '0901234563', 'Da Nang', 16.0544, 108.2022, 'patient', TRUE),
+('patient04', 'patient04@example.com', 'hashed_pw_4', 'Hoang', 'Pham', '2000-03-15', 'male', '0901234564', 'Hue', 16.4637, 107.5909, 'patient', TRUE),
+('patient05', 'patient05@example.com', 'hashed_pw_5', 'Thu', 'Do', '1998-08-25', 'female', '0901234565', 'Can Tho', 10.0452, 105.7469, 'patient', TRUE),
+('patient06', 'patient06@example.com', 'hashed_pw_6', 'Tuan', 'Nguyen', '1991-11-30', 'male', '0901234566', 'Hai Phong', 20.8449, 106.6881, 'patient', TRUE),
+
+-- Doctors
+('doctor01', 'doctor01@example.com', 'hashed_pw_7', 'Khoa', 'Nguyen', '1978-04-10', 'male', '0901234567', 'Hanoi', NULL, NULL, 'doctor', TRUE),
+('doctor02', 'doctor02@example.com', 'hashed_pw_8', 'Trang', 'Pham', '1982-07-18', 'female', '0901234568', 'Ho Chi Minh', NULL, NULL, 'doctor', TRUE),
+('doctor03', 'doctor03@example.com', 'hashed_pw_9', 'Quang', 'Le', '1975-02-22', 'male', '0901234569', 'Da Nang', NULL, NULL, 'doctor', TRUE),
+('doctor04', 'doctor04@example.com', 'hashed_pw_10', 'My', 'Tran', '1980-10-05', 'female', '0901234570', 'Hue', NULL, NULL, 'doctor', TRUE);
+
+INSERT INTO medical_records (
+    user_id, doctor_id, record_type, confidence_score, status, is_accurate,
+    weather_temp, humidity, air_quality_index, season
+)
+SELECT
+    -- Luân phiên user_id từ 1–6
+    (i % 6) + 1 AS user_id,
+
+    -- Luân phiên doctor_id từ 7–10
+    7 + (i % 4) AS doctor_id,
+
+    'doctor_diagnosis' AS record_type,
+    NULL AS confidence_score,
+
+    -- Xen kẽ status new / completed
+    'completed' AS status,
+
+    -- completed thì có is_accurate, ngẫu nhiên TRUE/FALSE
+    CASE WHEN i % 2 = 0 THEN NULL ELSE (i % 3 = 0) END AS is_accurate,
+
+    -- Weather, giả lập nhẹ
+    ROUND((36.5 + random() * 3)::numeric, 1) AS weather_temp,
+    FLOOR(50 + (random() * 30)) AS humidity,
+    FLOOR(1 + (random() * 5)) AS air_quality_index,
+
+    -- Luân phiên mùa
+    CASE (i % 4)
+        WHEN 0 THEN 'spring'
+        WHEN 1 THEN 'summer'
+        WHEN 2 THEN 'autumn'
+        ELSE 'winter'
+    END AS season
+
+FROM generate_series(1, 100) AS s(i);
 
 -- Grant permissions cho user database
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO health_predictor_user;
