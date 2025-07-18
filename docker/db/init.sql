@@ -250,4 +250,73 @@ COMMENT ON TABLE medical_records IS 'Lịch sử bệnh án - do bác sĩ hoặc
 COMMENT ON TABLE record_symptoms IS 'Triệu chứng cụ thể trong từng bệnh án';
 COMMENT ON TABLE record_diseases IS 'Bệnh được chẩn đoán trong từng bệnh án';
 COMMENT ON TABLE model_training_history IS 'Lịch sử train model sau mỗi phiên bác sĩ hoặc theo lịch';
-COMMENT ON TABLE doctor_sessions IS 'Phiên làm việc của bác sĩ - trigger train model khi kết thúc'; 
+COMMENT ON TABLE doctor_sessions IS 'Phiên làm việc của bác sĩ - trigger train model khi kết thúc';
+
+-- Populate record_diseases and record_symptoms for the 100 medical records
+DO $$
+DECLARE
+    record_id INT;
+    num_diseases INT;
+    num_symptoms INT;
+    disease_id INT;
+    symptom_id INT;
+    disease_ids INT[] := ARRAY[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    symptoms_map JSONB := '{
+        "1": [1, 2, 5, 4, 6],
+        "2": [1, 2, 7, 3, 6],
+        "3": [8, 9, 1, 6],
+        "4": [5, 2, 4, 6],
+        "5": [6, 3, 8, 1],
+        "6": [],
+        "7": [1, 2, 10, 6, 3],
+        "8": [4, 1, 3, 6],
+        "9": [3, 6, 10, 8],
+        "10": [6, 3, 8]
+    }';
+    selected_disease_ids INT[];
+    symptoms_for_record INT[];
+    i INT;
+    j INT;
+BEGIN
+    FOR record_id IN 1..100 LOOP
+        -- Randomly select 1 to 3 diseases
+        num_diseases := floor(random() * 3 + 1);
+        selected_disease_ids := ARRAY[]::INT[];
+        FOR i IN 1..num_diseases LOOP
+            disease_id := disease_ids[floor(random() * array_length(disease_ids, 1) + 1)];
+            IF NOT (disease_id = ANY(selected_disease_ids)) THEN
+                selected_disease_ids := array_append(selected_disease_ids, disease_id);
+            END IF;
+        END LOOP;
+
+        -- Get all symptoms for the selected diseases
+        symptoms_for_record := ARRAY[]::INT[];
+        FOREACH disease_id IN ARRAY selected_disease_ids
+        LOOP
+            -- Insert into record_diseases
+            INSERT INTO record_diseases (record_id, disease_id, probability)
+            VALUES (record_id, disease_id, random());
+
+            -- Get symptoms for the disease
+            DECLARE
+                symptom_array TEXT[];
+            BEGIN
+                symptom_array := ARRAY(SELECT jsonb_array_elements_text(symptoms_map->disease_id::TEXT));
+                FOREACH symptom_id IN ARRAY symptom_array
+                LOOP
+                    IF NOT (symptom_id = ANY(symptoms_for_record)) THEN
+                        symptoms_for_record := array_append(symptoms_for_record, symptom_id);
+                    END IF;
+                END LOOP;
+            END;
+        END LOOP;
+
+        -- Insert into record_symptoms
+        FOREACH symptom_id IN ARRAY symptoms_for_record
+        LOOP
+            INSERT INTO record_symptoms (record_id, symptom_id)
+            VALUES (record_id, symptom_id);
+        END LOOP;
+    END LOOP;
+END $$;
+ 
