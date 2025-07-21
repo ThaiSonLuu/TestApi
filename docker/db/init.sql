@@ -221,7 +221,7 @@ SELECT
     'completed' AS status,
 
     -- completed thì có is_accurate, ngẫu nhiên TRUE/FALSE
-    CASE WHEN i % 2 = 0 THEN NULL ELSE (i % 3 = 0) END AS is_accurate,
+    NULL AS is_accurate,
 
     -- Weather, giả lập nhẹ
     ROUND((36.5 + random() * 3)::numeric, 1) AS weather_temp,
@@ -295,7 +295,7 @@ BEGIN
         LOOP
             -- Insert into record_diseases
             INSERT INTO record_diseases (record_id, disease_id, probability)
-            VALUES (record_id, disease_id, random());
+            VALUES (record_id, disease_id, 1.00);
 
             -- Get symptoms for the disease
             DECLARE
